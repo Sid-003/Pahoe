@@ -113,7 +113,7 @@ namespace Pahoe
         public async Task<SearchResult> SearchAsync(string search)
         {
             // Have to write a url encoder that uses Spans...
-            using Stream stream = await _http.GetStreamAsync(string.Concat(_searchEndpoint, WebUtility.UrlEncode(search))).ConfigureAwait(false);
+            await using Stream stream = await _http.GetStreamAsync(string.Concat(_searchEndpoint, WebUtility.UrlEncode(search))).ConfigureAwait(false);
             return SearchResult.FromStream(stream);
         }
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Pahoe.Search
 {
-    public sealed class LavalinkTrack
+    public sealed class LavalinkTrack : IEquatable<LavalinkTrack>
     {
         public string Hash { get; internal set; }
 
@@ -45,6 +45,11 @@ namespace Pahoe.Search
                 IsStream = reader.Read<bool>(),
                 Uri = reader.Read<bool>() ? reader.ReadString() : string.Empty
             };
+        }
+
+        public bool Equals(LavalinkTrack other)
+        {
+            return this.Identifier.Equals(other?.Identifier);
         }
 
         public override string ToString()

@@ -17,7 +17,7 @@ namespace Pahoe
 
         public TimeSpan Position { get; internal set; }
 
-        public PlayerState State { get; private set; } = PlayerState.Idle;
+        public PlayerState State { get; set; } = PlayerState.Idle;
 
         public ushort Volume { get; private set; } = 100;
 
@@ -130,14 +130,12 @@ namespace Pahoe
 
         private Task VoiceStateUpdatedAsync(VoiceStateUpdatedEventArgs e)
         {
-            if (Client.DiscordClient.CurrentUser.Id == e.Member.Id)
-            {
-                if (e.NewVoiceState == null)
-                    return DisconnectAsync();
+            if (Client.DiscordClient.CurrentUser.Id != e.Member.Id) return Task.CompletedTask;
+            if (e.NewVoiceState == null)
+                return DisconnectAsync();
 
-                Channel = Channel.Guild.GetVoiceChannel(e.NewVoiceState.ChannelId);
-                SessionId = e.NewVoiceState.SessionId;
-            }
+            Channel = Channel.Guild.GetVoiceChannel(e.NewVoiceState.ChannelId);
+            SessionId = e.NewVoiceState.SessionId;
 
             return Task.CompletedTask;
         }

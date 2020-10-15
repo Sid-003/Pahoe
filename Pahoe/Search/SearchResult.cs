@@ -116,24 +116,30 @@ namespace Pahoe.Search
                                     {
                                         break;
                                     }
-                                    else if (reader.TokenType == JsonTokenType.PropertyName)
+
+                                    switch (reader.TokenType)
                                     {
-                                        if (reader.ValueTextEquals("track"))
+                                        case JsonTokenType.PropertyName:
                                         {
-                                            reader.Read();
-                                            track.Hash = reader.GetString();
-                                        }
-                                    }
-                                    else if (reader.TokenType == JsonTokenType.StartObject)
-                                    {
-                                        while (reader.Read())
-                                        {
-                                            if (reader.TokenType == JsonTokenType.EndObject)
+                                            if (reader.ValueTextEquals("track"))
                                             {
-                                                break;
+                                                reader.Read();
+                                                track.Hash = reader.GetString();
                                             }
-                                            else if (reader.TokenType == JsonTokenType.PropertyName)
+
+                                            break;
+                                        }
+                                        case JsonTokenType.StartObject:
+                                        {
+                                            while (reader.Read())
                                             {
+                                                if (reader.TokenType == JsonTokenType.EndObject)
+                                                {
+                                                    break;
+                                                }
+
+                                                if (reader.TokenType != JsonTokenType.PropertyName) continue;
+
                                                 static bool equals(ReadOnlySpan<byte> bytes, ReadOnlySpan<char> str)
                                                 {
                                                     for (int i = 0; i < bytes.Length; i++)
@@ -146,21 +152,27 @@ namespace Pahoe.Search
                                                 ReadOnlySpan<byte> bytes = reader.ValueSpan;
                                                 reader.Skip();
 
-                                                if (equals(bytes, "identifier"))
+                                                if (@equals(bytes, "identifier"))
                                                     track.Identifier = reader.GetString();
-                                                else if (equals(bytes, "isSeekable"))
+                                                else if (@equals(bytes, "isSeekable"))
                                                     track.IsSeekable = reader.GetBoolean();
-                                                else if (equals(bytes, "author"))
+                                                else if (@equals(bytes, "author"))
                                                     track.Author = reader.GetString();
-                                                else if (equals(bytes, "length"))
-                                                    track.Length = TimeSpan.FromMilliseconds(reader.GetDouble());
-                                                else if (equals(bytes, "isStream"))
+                                                else if (@equals(bytes, "length"))
+                                                {
+                                                    var length = reader.GetInt64();
+                                                    track.Length = length >= TimeSpan.MaxValue.Ticks ? 
+                                                        TimeSpan.MaxValue : TimeSpan.FromMilliseconds(length);
+                                                }
+                                                else if (@equals(bytes, "isStream"))
                                                     track.IsStream = reader.GetBoolean();
-                                                else if (equals(bytes, "title"))
+                                                else if (@equals(bytes, "title"))
                                                     track.Title = reader.GetString();
-                                                else if (equals(bytes, "uri"))
+                                                else if (@equals(bytes, "uri"))
                                                     track.Uri = reader.GetString();
                                             }
+
+                                            break;
                                         }
                                     }
                                 }

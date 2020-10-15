@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace Pahoe.Payloads
 {
     internal static class ConfigureResume
     {
-        internal const string ResumeKey = "iHateQuahu";
+        internal const string ResumeKey = "iLoveQuahu";
 
         internal static ValueTask SendAsync(ClientWebSocket webSocket)
         {
